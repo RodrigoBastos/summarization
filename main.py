@@ -2,7 +2,7 @@ __author__ = 'rodrigo'
 
 import re
 
-expressions = [
+cue_phrases = [
     'in summary',
     'in conclusion',
     'our investigation',
@@ -13,23 +13,30 @@ expressions = [
     'important',
     'in particular',
     'hardly',
-    'impossible'
+    'impossible',
+    'The purpose',
+    'information'
 ]
 
 # CP = Cue-phrase score,
 # CPS = Number of cue-phrases in the sentence,
 # CPD = Total number of cue-phrases in the document
 
-file = open('documents/9150')
+file = open('documents/8514')
 sentences = file.readlines()
 #print(sentences)
 
-x = 'Meu nome é rodrigo bastos. Eu sou louco por computação. Meu nome Rodrigo Bastos'
+# x = 'Meu nome é rodrigo bastos. Eu sou louco por computação. Meu nome Rodrigo Bastos'
+#
+# exactMatch = re.compile('rodrigo bastos', flags=re.IGNORECASE)
+# print(exactMatch.findall(x))
 
-exactMatch = re.compile('rodrigo bastos', flags=re.IGNORECASE)
-print(exactMatch.findall(x))
+for sentence in sentences:
+    for cue_phrase in cue_phrases:
+        exactMatch = re.compile(cue_phrase, flags=re.IGNORECASE)
+        match = exactMatch.findall(sentence)
 
-# for sentence in sentences:
-#     for expression in expressions:
-#         exactMatch = re.compile(expression, flags=re.IGNORECASE)
-#         print(exactMatch.search(sentence))
+        if len(match) > 0:
+            print(match)
+
+
