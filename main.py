@@ -31,12 +31,16 @@ sentences = file.readlines()
 # exactMatch = re.compile('rodrigo bastos', flags=re.IGNORECASE)
 # print(exactMatch.findall(x))
 
+count_cue_phrases = 0
+count_cue_phrases_document = {}
 for sentence in sentences:
+    n_cue_phrases = 0
     for cue_phrase in cue_phrases:
         exactMatch = re.compile(cue_phrase, flags=re.IGNORECASE)
         match = exactMatch.findall(sentence)
-
-        if len(match) > 0:
-            print(match)
-
+        n_cue_phrases += len(match)
+        count_cue_phrases += len(match)
+    if n_cue_phrases > 0:
+        count_cue_phrases_document[sentence] = n_cue_phrases
+print(count_cue_phrases_document)
 
