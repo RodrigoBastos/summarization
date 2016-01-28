@@ -5,9 +5,19 @@ from os import listdir
 from os.path import isfile, join
 
 onlyfiles = [f for f in listdir('documents') if isfile(join('documents', f))]
-print(onlyfiles)
 
+#incidentally, for example, anyway, by the way, furthermore, first, second, then, now, thus, moreover, therefore, hence, lastly, finally, in summary, and on the other hand."
 cue_phrases = [
+    'incidentally',
+    'for example',
+    'anyway',
+    'by the way',
+    'furthermore',
+    'first',
+    'second',
+    'moreover',
+    'therefore',
+    'and on the other hand',
     'in summary',
     'in conclusion',
     'our investigation',
@@ -15,7 +25,6 @@ cue_phrases = [
     'the most important',
     'according to the study',
     'significantly',
-    'important',
     'in particular',
     'hardly',
     'impossible',
@@ -31,12 +40,7 @@ for name_file in onlyfiles:
     file = open('documents/'+name_file)
     files.append(file.readlines())
 
-# x = 'Meu nome é rodrigo bastos. Eu sou louco por computação. Meu nome Rodrigo Bastos'
-#
-# exactMatch = re.compile('rodrigo bastos', flags=re.IGNORECASE)
-# print(exactMatch.findall(x))
-
-
+count = 0
 for sentences in files:
     count_cue_phrases = 0
     count_cue_phrases_document = {}
@@ -49,8 +53,12 @@ for sentences in files:
             count_cue_phrases += len(match)
         if n_cue_phrases > 0:
             count_cue_phrases_document[sentence] = n_cue_phrases
+    count += count_cue_phrases
     for item in count_cue_phrases_document:
         print(item, count_cue_phrases_document[item])
+
+
+print(count)
 
 
 
