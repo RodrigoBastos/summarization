@@ -3,6 +3,17 @@ __author__ = 'rodrigo'
 import re
 from os import listdir
 from os.path import isfile, join
+from nltk.tokenize import sent_tokenize
+from operator import itemgetter
+
+# users = [{'name': 'Zoe', 'age': 10}, {'name': 'Homer', 'age': 39}]
+# newlist = sorted(users, key=lambda k: k['name'])
+# print(newlist)
+
+
+# text = 'Meu nome é Rodrigo. Sou aluno da ufal. Faço mestrado de informática'
+# sent_tokenize_list = sent_tokenize(text)
+# print(sent_tokenize_list)
 
 onlyfiles = [f for f in listdir('documents') if isfile(join('documents', f))]
 
@@ -223,8 +234,11 @@ conj_adverb = [
     'what is more',
     'whereas',
     'whereupon'
-
 ]
+
+# def sentences_tokenize (document) :
+
+
 
 # CP = Cue-phrase score,
 # CPS = Number of cue-phrases in the sentence,
@@ -234,48 +248,76 @@ conj_adverb = [
 files = []
 for name_file in onlyfiles:
     file = open('documents/' + name_file)
-    files.append({'document': file.readlines(), 'doc_id': name_file})
+    files.append({'document': [line.rstrip("\n").strip() for line in file.readlines()], 'doc_id': name_file})
 
+print(len(files))
+#files = [files[0]]
 dict_document = []
-dict_sentences = {}
-
 cue_phrases_document = 0
+
 for file in files:
-    # print(file)
-    cue_phrases_sentence = 0
-    for sentence in file['document']:
-        for cue_phrase in conj_adverb:
-            # Match
-            exactMatch = re.compile(cue_phrase, flags=re.IGNORECASE)
-            match = exactMatch.findall(sentence)
+    # Current Document
+    # Tokenize Line
+    dict_sentences = {}
+    document = file['document']
+    doc_id = file['doc_id']
+    good_sentences = []
+    for line in document:
+        cue_phrases_sentence = 0
+        sentences = sent_tokenize(line)
+        for sentence in sentences:
+            for cue_phrase in conj_adverb:
+                # MATCH
+                exactMacth = re.compile(cue_phrase, flags=re.IGNORECASE)
+                match = exactMacth.findall(sentence)
+                cue_phrases_sentence += len(match)
 
-            # Cue Phrases in Document
-            cue_phrases_document += len(match)
+            if cue_phrases_sentence > 0:
+                dict_sentences[sentence] = cue_phrases_sentence
+        cue_phrases_document += cue_phrases_sentence
 
-            # Cue Phrases In Sentence
-            cue_phrases_sentence += len(match)
+    # Calcule Cue Phrase Score
+    if len(dict_sentences) > 0:
+        for sentence in dict_sentences:
+            cps = dict_sentences[sentence]
 
-        if cue_phrases_sentence > 0:
-            dict_sentences[sentence] = cue_phrases_sentence
+            cp = cps / cue_phrases_document
+            good_sentences.append({'sentence': sentence, 'cp': cp})
 
-    max_cp = -99999
-    for sentence in dict_sentences:
-        cps = dict_sentences[sentence]
-        cp = cps / cue_phrases_document
-        if max_cp < cp:
-            max_cp = cp
-            dict_document.append({'sentence': sentence, 'cp': cp})
-
-print(dict_document)
-
-
-
-
-
-
-
-
-
+        # Get the best sentences in document
+        newlist = sorted(good_sentences, key=lambda k: k['cp'], reverse=True)[:4]
+        dict_document.append({'sentences': newlist, 'doc': doc_id})
+    else:
+        dict_document.append({'sentences': 'NOT CUEPHRASE', 'doc': doc_id})
 
 
+print(sorted(dict_document, key=lambda k: k['doc']))
 
+
+# Preciso adicionar as 4 melhores sentenças do Documento
+
+# for sentence in file['document']:
+
+#         for cue_phrase in conj_adverb:
+#             # Match
+#             exactMatch = re.compile(cue_phrase, flags=re.IGNORECASE)
+#             match = exactMatch.findall(sentence)
+#
+#             # Cue Phrases in Document
+#             cue_phrases_document += len(match)
+#
+#             # Cue Phrases In Sentence
+#             cue_phrases_sentence += len(match)
+#
+#         if cue_phrases_sentence > 0:
+#             dict_sentences[sentence] = cue_phrases_sentence
+#
+#     max_cp = -99999
+#     for sentence in dict_sentences:
+#         cps = dict_sentences[sentence]
+#         cp = cps / cue_phrases_document
+#         if max_cp < cp:
+#             max_cp = cp
+#             dict_document.append({'sentence': sentence, 'cp': cp})
+#
+# print(dict_document)
