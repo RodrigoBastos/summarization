@@ -6,7 +6,7 @@ from os.path import isfile, join
 
 onlyfiles = [f for f in listdir('documents') if isfile(join('documents', f))]
 
-#incidentally, for example, anyway, by the way, furthermore, first, second, then, now, thus, moreover, therefore, hence, lastly, finally, in summary, and on the other hand."
+# incidentally, for example, anyway, by the way, furthermore, first, second, then, now, thus, moreover, therefore, hence, lastly, finally, in summary, and on the other hand."
 cue_phrases = [
     'incidentally',
     'for example',
@@ -32,33 +32,250 @@ cue_phrases = [
     'The information'
 ]
 
+conj_adverb = [
+    'above all',
+    'accordingly',
+    'actually',
+    'admittedly',
+    'after all',
+    'after that',
+    'afterwards',
+    'again',
+    'all in all',
+    'all the same',
+    'also',
+    'alternatively',
+    'another time',
+    'anyway',
+    'as a consequence',
+    'as a corollary',
+    'as a result',
+    'as it happened',
+    'as it is',
+    'as it turned out',
+    'as luck would have it',
+    'as well',
+    'at any rate',
+    'at first',
+    'at first blush',
+    'at first sight',
+    'at first view',
+    'at least',
+    'at once',
+    'at that',
+    'at the outset',
+    'at the same time',
+    'before',
+    'before long',
+    'besides',
+    'by all means',
+    'by and by',
+    'by comparison',
+    'by contrast',
+    'by the same token',
+    'by the way',
+    'certainly',
+    'clearly',
+    'come to think of it',
+    'consequently',
+    'conversely',
+    'correspondingly',
+    'despite this',
+    'earlier',
+    'either',
+    'equally',
+    'essentially, then',
+    'even',
+    'even so',
+    'even then',
+    'eventually',
+    'ever since',
+    'except',
+    'failing that',
+    'finally',
+    'first',
+    'first of all',
+    'firstly',
+    'following this',
+    'for a start',
+    'for another thing',
+    'for example',
+    'for instance',
+    'for one thing',
+    'for that matter',
+    'for this reason',
+    'fortunately',
+    'further',
+    'furthermore',
+    'having said that',
+    'hence',
+    'however',
+    'if not',
+    'if so',
+    'in a different vein',
+    'in actual fact',
+    'in addition',
+    'in any case',
+    'in conclusion',
+    'in contrast',
+    'in fact',
+    'in other words',
+    'in particular',
+    'in short',
+    'in spite that',
+    'in sum',
+    'in that case',
+    'in the beginning',
+    'in the case of',
+    'in the end',
+    'in the event',
+    'in the first place',
+    'in the hope that',
+    'in the meantime',
+    'in this way',
+    'in truth',
+    'in turn',
+    'in which case',
+    'incidentally',
+    'indeed',
+    'initially',
+    'instantly',
+    'instead',
+    'just',
+    'just then',
+    'last',
+    'lastly',
+    'later',
+    'likewise',
+    'luckily',
+    'mainly because',
+    'meanwhile',
+    'merely',
+    'mind you',
+    'moreover',
+    'much later',
+    'much sooner',
+    'naturally',
+    'nevertheless',
+    'next',
+    'no doubt',
+    'nonetheless',
+    'not because',
+    'not only',
+    'not that',
+    'notably',
+    'on the contrary',
+    'on the one hand',
+    'on the one side',
+    'on the other hand',
+    'on the other side',
+    'on top of this',
+    'once again',
+    'once more',
+    'originally',
+    'otherwise',
+    'overall',
+    'plainly',
+    'presently',
+    'previously',
+    'put another way',
+    'rather',
+    'reciprocally',
+    'regardless of that',
+    'second',
+    'secondly',
+    'similarly',
+    'simultaneously',
+    'soon',
+    'specifically',
+    'still',
+    'subsequently',
+    'suddenly',
+    'summarising',
+    'summing up',
+    'sure enough',
+    'surely',
+    'that is',
+    'that is to say',
+    'then again',
+    'thereafter',
+    'thereby',
+    'therefore',
+    'third',
+    'thirdly',
+    'this time',
+    'though',
+    'thus',
+    'to be sure',
+    'to begin with',
+    'to conclude',
+    'to make matters worse',
+    'to start with',
+    'to sum up',
+    'to summarise',
+    'to take an example',
+    'too',
+    'true',
+    'ultimately',
+    'undoubtedly',
+    'unfortunately',
+    'well',
+    'what is more',
+    'whereas',
+    'whereupon'
+
+]
+
 # CP = Cue-phrase score,
 # CPS = Number of cue-phrases in the sentence,
 # CPD = Total number of cue-phrases in the document
+
+# Lendo todos os arquivos
 files = []
 for name_file in onlyfiles:
-    file = open('documents/'+name_file)
-    files.append(file.readlines())
+    file = open('documents/' + name_file)
+    files.append({'document': file.readlines(), 'doc_id': name_file})
 
-count = 0
-for sentences in files:
-    count_cue_phrases = 0
-    count_cue_phrases_document = {}
-    for sentence in sentences:
-        n_cue_phrases = 0
-        for cue_phrase in cue_phrases:
+dict_document = []
+dict_sentences = {}
+
+cue_phrases_document = 0
+for file in files:
+    # print(file)
+    cue_phrases_sentence = 0
+    for sentence in file['document']:
+        for cue_phrase in conj_adverb:
+            # Match
             exactMatch = re.compile(cue_phrase, flags=re.IGNORECASE)
             match = exactMatch.findall(sentence)
-            n_cue_phrases += len(match)
-            count_cue_phrases += len(match)
-        if n_cue_phrases > 0:
-            count_cue_phrases_document[sentence] = n_cue_phrases
-    count += count_cue_phrases
-    for item in count_cue_phrases_document:
-        print(item, count_cue_phrases_document[item])
+
+            # Cue Phrases in Document
+            cue_phrases_document += len(match)
+
+            # Cue Phrases In Sentence
+            cue_phrases_sentence += len(match)
+
+        if cue_phrases_sentence > 0:
+            dict_sentences[sentence] = cue_phrases_sentence
+
+    max_cp = -99999
+    for sentence in dict_sentences:
+        cps = dict_sentences[sentence]
+        cp = cps / cue_phrases_document
+        if max_cp < cp:
+            max_cp = cp
+            dict_document.append({'sentence': sentence, 'cp': cp})
+
+print(dict_document)
 
 
-print(count)
+
+
+
+
+
+
+
 
 
 
